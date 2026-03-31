@@ -19,105 +19,118 @@ h1{font-size:1.2rem;color:#1a1d3e;font-weight:700}
   background:#fff;border-radius:16px;
   box-shadow:0 4px 32px #1a1d3e1a;
   display:flex;flex-direction:column;
-  overflow:hidden;padding:16px 20px;gap:0;
+  overflow:hidden;padding:14px 18px 10px;gap:0;
 }
 
-/* Timeline panel — repeated for static and continuous */
-.tl-panel{flex:1;display:flex;flex-direction:column;gap:5px;min-height:0}
-.tl-panel:first-child{border-bottom:1px solid #e8eaf6;padding-bottom:12px;margin-bottom:12px}
-
-.tl-header{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-bottom:6px}
-.tl-title{font-size:11px;font-weight:800;letter-spacing:.3px}
-.tl-badge{
-  font-size:9px;font-weight:700;padding:2px 9px;border-radius:12px;
+/* ── Panel ─────────────────────────────────────────────────────────────── */
+.tl-panel{
+  flex:1;display:flex;flex-direction:column;gap:0;min-height:0;
+}
+.tl-panel:first-child{
+  border-bottom:1px solid #e8eaf6;padding-bottom:10px;margin-bottom:10px;
 }
 
-.tl-lanes{flex:1;display:flex;flex-direction:column;gap:5px;position:relative}
-.lane{
-  flex:1;
-  display:flex;align-items:center;gap:0;
-  position:relative;
+.tl-header{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;margin-bottom:5px;
 }
+.tl-title{font-size:11px;font-weight:800}
+.tl-badge{font-size:9px;font-weight:700;padding:2px 9px;border-radius:12px}
+.util-badge{font-size:9px;font-weight:700;margin-left:auto;opacity:0;transition:opacity 400ms ease}
+.util-badge.show{opacity:1}
 
-/* Lane label */
-.lane-label{
-  width:52px;flex-shrink:0;
+/* ── Slot rows ─────────────────────────────────────────────────────────── */
+.slot-rows{flex:1;display:flex;flex-direction:column;gap:3px;min-height:0}
+
+.slot-row{
+  flex:1;display:flex;align-items:center;gap:0;min-height:0;
+}
+.slot-label{
+  width:54px;flex-shrink:0;
   font-size:9px;font-weight:700;color:#aaa;text-align:right;padding-right:8px;
 }
 
-/* Timeline track */
-.lane-track{
-  flex:1;height:100%;
-  border-radius:5px;
-  background:#f5f6fc;
-  border:1px solid #e8eaf6;
-  position:relative;
-  overflow:hidden;
-}
-
-/* Each request bar inside the track */
-.req-bar{
-  position:absolute;top:3px;bottom:3px;
-  border-radius:5px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;font-weight:800;
-  color:#fff;
-  opacity:0;
-  transform:scaleX(0);
-  transform-origin:left center;
-  transition:opacity 350ms ease, transform 450ms cubic-bezier(.4,0,.2,1);
-  white-space:nowrap;overflow:hidden;
-}
-.req-bar.show{opacity:1;transform:scaleX(1)}
-
-/* Idle bars (static only) */
-.idle-bar{
-  position:absolute;top:3px;bottom:3px;
-  border-radius:5px;
-  background:repeating-linear-gradient(
-    45deg,
-    #e0e4f0 0px, #e0e4f0 4px,
-    #f0f2fa 4px, #f0f2fa 8px
-  );
-  border:1.5px dashed #c8cce8;
-  opacity:0;
-  transition:opacity 400ms ease;
-  display:flex;align-items:center;justify-content:center;
-}
-.idle-bar.show{opacity:1}
-.idle-bar span{font-size:9px;font-weight:700;color:#aaa}
-
-/* Tick marks */
-.tick-row{
-  height:16px;flex-shrink:0;
-  display:flex;align-items:flex-start;
-  margin-left:52px; /* align with lane tracks */
+/* ── Token grid ─────────────────────────────────────────────────────────── */
+.token-grid{
+  flex:1;display:grid;
+  grid-template-columns:repeat(13,1fr);
+  gap:3px;height:100%;
   position:relative;
 }
-.tick{
-  position:absolute;
-  font-size:8px;color:#bbb;font-weight:600;
-  transform:translateX(-50%);
+
+.tcell{
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:rgba(255,255,255,.92);
+  opacity:0;
+  transition:opacity 220ms ease, transform 220ms cubic-bezier(.34,1.56,.64,1);
+  transform:scale(.7);
+  cursor:default;
+  min-height:0;
 }
-.tick-line{
+.tcell.show{opacity:1;transform:scale(1)}
+.tcell.idle{
+  background:repeating-linear-gradient(45deg,#dde1f0 0,#dde1f0 3px,#eef0fa 3px,#eef0fa 6px);
+  border:1.5px dashed #c0c8e8;
+  color:#b0b8d0;font-weight:700;font-size:8px;
+}
+.tcell.idle.show{opacity:1;transform:scale(1)}
+.tcell.empty{opacity:0!important;pointer-events:none}
+
+/* Current-tick cursor */
+.cursor-col{
   position:absolute;top:0;bottom:0;
-  width:1px;background:#e8eaf6;
-  pointer-events:none;
+  width:3px;border-radius:2px;
+  background:#4f5ff8;
+  opacity:0;transition:left 180ms ease, opacity 250ms ease;
+  pointer-events:none;z-index:5;
 }
+.cursor-col.show{opacity:.35}
 
-/* Utilization bars at bottom */
-#util-row{
-  display:flex;gap:20px;margin-top:8px;flex-shrink:0;
-  margin-left:52px;
+/* Tick label row */
+.tick-row{
+  display:flex;align-items:flex-start;flex-shrink:0;
+  height:14px;margin-top:1px;
 }
-.util-wrap{flex:1}
-.util-label{font-size:9px;font-weight:700;color:#aaa;margin-bottom:3px}
-.util-track{height:10px;background:#f0f2fa;border-radius:5px;overflow:hidden;border:1px solid #e8eaf6}
-.util-fill{height:100%;border-radius:5px;width:0%;transition:width 900ms ease}
+.tick-grid{
+  flex:1;display:grid;
+  grid-template-columns:repeat(13,1fr);
+  gap:3px;
+}
+.tick-lbl{
+  font-size:7.5px;color:#c0c4d8;font-weight:600;text-align:center;
+  transition:color 250ms ease,font-weight 250ms ease;
+}
+.tick-lbl.active{color:#4f5ff8;font-weight:800}
 
-/* Desc + controls */
+/* Queue display */
+#queue-row{
+  display:flex;align-items:center;gap:6px;
+  flex-shrink:0;margin-bottom:4px;
+  font-size:9px;color:#aaa;font-weight:700;
+}
+.q-chip{
+  font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:10px;color:#fff;
+  opacity:0;transition:opacity 300ms ease, text-decoration 200ms ease;
+}
+.q-chip.show{opacity:1}
+.q-chip.done{opacity:.3;text-decoration:line-through}
+
+/* Summary box */
+#summary-box{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  width:90%;max-width:580px;
+  border-radius:8px;background:#fff;border:1.5px solid #c0c8e8;
+  padding:9px 14px;font-size:.82rem;line-height:1.6;color:#2a2d4e;
+  opacity:0;transition:opacity 400ms ease;z-index:20;
+  display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;
+}
+#summary-box.show{opacity:1}
+.sum-col{display:flex;flex-direction:column;gap:3px}
+.sum-head{font-size:10px;font-weight:800}
+.sum-stat{font-size:9px;color:#555}
+
 #desc-box{width:calc(100vw - 32px);max-width:100%;margin-top:12px;padding:12px 18px;background:#fff;
-  border-radius:10px;border-left:4px solid #6d28d9;box-shadow:0 2px 10px #1a1d3e0d;
+  border-radius:10px;border-left:4px solid #4f5ff8;box-shadow:0 2px 10px #1a1d3e0d;
   font-size:.86rem;line-height:1.65;color:#2a2d4e;min-height:52px}
 #controls{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap;justify-content:center}
 .ctrl{padding:9px 26px;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:700;transition:all .15s}
@@ -144,29 +157,56 @@ h1{font-size:1.2rem;color:#1a1d3e;font-weight:700}
     <a class="home-btn" href="index.html">← Home</a>
     <h1>Continuous Batching</h1>
   </div>
-  <span id="step-pill">Step 1 / 7</span>
+  <span id="step-pill">Step 1 / 15</span>
 </div>
 
 <div id="stage">
-  <!-- Static batching row -->
-  <div class="tl-panel" id="panel-static">
+
+  <!-- Static batching panel -->
+  <div class="tl-panel">
     <div class="tl-header">
-      <span class="tl-title" style="color:#c62828">Static Batching</span>
-      <span class="tl-badge" style="background:#fdecea;color:#c62828">Wait for entire batch to finish</span>
-      <span id="static-util-badge" style="font-size:9px;color:#bbb;margin-left:auto"></span>
+      <span class="tl-title" style="color:#c62828">▲ Static Batching</span>
+      <span class="tl-badge" style="background:#fdecea;color:#c62828">waits for full batch to finish</span>
+      <span class="util-badge" id="static-util" style="color:#c62828"></span>
     </div>
-    <div class="tl-lanes" id="static-lanes"><!-- injected --></div>
+    <div class="slot-rows" id="static-slots"></div>
+    <div class="tick-row">
+      <div style="width:54px;flex-shrink:0"></div>
+      <div class="tick-grid" id="static-ticks"></div>
+    </div>
   </div>
 
-  <!-- Continuous batching row -->
-  <div class="tl-panel" id="panel-cont">
+  <!-- Continuous batching panel -->
+  <div class="tl-panel">
     <div class="tl-header">
-      <span class="tl-title" style="color:#2e7d32">Continuous Batching</span>
-      <span class="tl-badge" style="background:#e8f5e9;color:#2e7d32">Slot in new requests immediately</span>
-      <span id="cont-util-badge" style="font-size:9px;color:#bbb;margin-left:auto"></span>
+      <span class="tl-title" style="color:#2e7d32">▼ Continuous Batching</span>
+      <span class="tl-badge" style="background:#e8f5e9;color:#2e7d32">slots in new requests each iteration</span>
+      <span class="util-badge" id="cont-util" style="color:#2e7d32"></span>
     </div>
-    <div class="tl-lanes" id="cont-lanes"><!-- injected --></div>
+    <div class="slot-rows" id="cont-slots"></div>
+    <div class="tick-row">
+      <div style="width:54px;flex-shrink:0"></div>
+      <div class="tick-grid" id="cont-ticks"></div>
+    </div>
   </div>
+
+  <div id="summary-box">
+    <div class="sum-col">
+      <div class="sum-head" style="color:#c62828">Static Batching</div>
+      <div class="sum-stat">Batch 1 ends: t = 8</div>
+      <div class="sum-stat">Batch 2 ends: t = 13</div>
+      <div class="sum-stat">Idle slot-steps: 8 of 39 total</div>
+      <div class="sum-stat" style="font-weight:700">GPU utilization ≈ 79%</div>
+    </div>
+    <div class="sum-col">
+      <div class="sum-head" style="color:#2e7d32">Continuous Batching</div>
+      <div class="sum-stat">All 6 requests done: t = 11</div>
+      <div class="sum-stat">2 iterations faster than static</div>
+      <div class="sum-stat">Idle slot-steps: 0 while busy</div>
+      <div class="sum-stat" style="font-weight:700">GPU utilization ≈ 85%</div>
+    </div>
+  </div>
+
 </div>
 
 <div id="desc-box"></div>
@@ -180,179 +220,253 @@ h1{font-size:1.2rem;color:#1a1d3e;font-weight:700}
 
 <script>
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const raf2  = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-// ── Timeline constants ─────────────────────────────────────────────────────
-// Total visual ticks shown: 20
-// Pixel width of each tick: computed from container
-// We use percentage-based positioning (% of lane-track width).
+// ── Grid data ─────────────────────────────────────────────────────────────
+// Requests: A=3 tokens, B=5, C=8, D=4, E=5, F=3
+// Static: batch 1 (A,B,C) starts t=1; batch 2 (D,E,F) starts t=9 (after C finishes)
+// Continuous: D starts t=4 (when A done), E starts t=6 (when B done), F starts t=9 (when C done)
+// Total ticks shown: 13
 
-const TOTAL_TICKS = 20;
-const pct = t => (t / TOTAL_TICKS * 100).toFixed(2) + '%';
-const w   = (dur) => (dur / TOTAL_TICKS * 100).toFixed(2) + '%';
+const TICKS = 13;
 
-// Request definitions: {id, label, start, dur, color}
-const REQUESTS = {
-  A: {label:'A', start:0,  dur:4,  color:'#1e88e5', bg:'#1e88e5dd'},
-  B: {label:'B', start:0,  dur:7,  color:'#8e24aa', bg:'#8e24aadd'},
-  C: {label:'C', start:0,  dur:11, color:'#e53935', bg:'#e53935dd'},
-  D: {label:'D', start:4,  dur:5,  color:'#f57c00', bg:'#f57c00dd'}, // continuous start
-  E: {label:'E', start:7,  dur:6,  color:'#00838f', bg:'#00838fdd'}, // continuous start
-  F: {label:'F', start:11, dur:4,  color:'#2e7d32', bg:'#2e7d32dd'},
-  // Static D/E/F start at 11 (next batch)
-  D_s: {label:'D', start:11, dur:5, color:'#f57c00', bg:'#f57c00dd'},
-  E_s: {label:'E', start:11, dur:6, color:'#00838f', bg:'#00838fdd'},
-  F_s: {label:'F', start:11, dur:4, color:'#2e7d32', bg:'#2e7d32dd'},
+const REQ_COLORS = {
+  A:'#1e88e5', B:'#8e24aa', C:'#e53935',
+  D:'#f57c00', E:'#00838f', F:'#2e7d32',
 };
 
-// ── Build timeline panels ─────────────────────────────────────────────────
-function buildPanel(containerId, lanes) {
-  const container = document.getElementById(containerId);
-  const trackW = 'calc(100% - 52px)'; // matches lane-label offset
+// makeSlot([req, count], ...) → array of TICKS request-chars (null = empty, 'idle' = idle)
+function makeSlot(...runs) {
+  const arr = [];
+  for (const [req, n] of runs) for (let i = 0; i < n; i++) arr.push(req);
+  while (arr.length < TICKS) arr.push(null);
+  return arr;
+}
 
-  lanes.forEach(({label, bars, idles}) => {
-    const lane = document.createElement('div');
-    lane.className = 'lane';
-    lane.innerHTML = `<span class="lane-label">Slot ${label}</span>`;
+const STATIC = [
+  makeSlot(['A',3],['idle',5],['D',4],[null,1]),   // Slot 1
+  makeSlot(['B',5],['idle',3],['E',5]           ),  // Slot 2
+  makeSlot(['C',8],['F',3],[null,2]             ),   // Slot 3
+];
+const CONT = [
+  makeSlot(['A',3],['D',4],[null,6]),                // Slot 1
+  makeSlot(['B',5],['E',5],[null,3]),                // Slot 2
+  makeSlot(['C',8],['F',3],[null,2]),                // Slot 3
+];
 
-    const track = document.createElement('div');
-    track.className = 'lane-track';
+// ── Build DOM ─────────────────────────────────────────────────────────────
+function buildPanel(slotContainerId, tickContainerId, data, prefix) {
+  const slotCont  = document.getElementById(slotContainerId);
+  const tickCont  = document.getElementById(tickContainerId);
 
-    // tick lines
-    for (let t = 0; t <= TOTAL_TICKS; t += 4) {
-      const line = document.createElement('div');
-      line.className = 'tick-line';
-      line.style.left = pct(t);
-      track.appendChild(line);
-    }
+  data.forEach((slot, si) => {
+    const row = document.createElement('div');
+    row.className = 'slot-row';
 
-    bars.forEach(({req, id}) => {
-      const r = REQUESTS[req];
-      const bar = document.createElement('div');
-      bar.className = 'req-bar';
-      bar.id = id;
-      bar.style.left  = pct(r.start);
-      bar.style.width = w(r.dur);
-      bar.style.background = r.bg;
-      bar.textContent = `Req ${r.label}`;
-      track.appendChild(bar);
+    const lbl = document.createElement('div');
+    lbl.className = 'slot-label';
+    lbl.textContent = `Slot ${si + 1}`;
+    row.appendChild(lbl);
+
+    const grid = document.createElement('div');
+    grid.className = 'token-grid';
+    grid.id = `${prefix}-grid-${si}`;
+
+    // cursor overlay
+    const cursor = document.createElement('div');
+    cursor.className = 'cursor-col';
+    cursor.id = `${prefix}-cursor-${si}`;
+    grid.appendChild(cursor);
+
+    let prevReq = null;
+    slot.forEach((req, ti) => {
+      const cell = document.createElement('div');
+      cell.className = 'tcell';
+      cell.id = `${prefix}-c${si}-t${ti}`;
+      if (req === 'idle') {
+        cell.classList.add('idle');
+        cell.textContent = 'idle';
+      } else if (req) {
+        cell.style.background = REQ_COLORS[req];
+        // Show label on first cell of each run
+        if (req !== prevReq) cell.textContent = req;
+      } else {
+        cell.classList.add('empty');
+      }
+      prevReq = req;
+      grid.appendChild(cell);
     });
 
-    (idles || []).forEach(({id, start, dur}) => {
-      const idleBar = document.createElement('div');
-      idleBar.className = 'idle-bar';
-      idleBar.id = id;
-      idleBar.style.left  = pct(start);
-      idleBar.style.width = w(dur);
-      idleBar.innerHTML = `<span>idle</span>`;
-      track.appendChild(idleBar);
-    });
-
-    lane.appendChild(track);
-    container.appendChild(lane);
+    row.appendChild(grid);
+    slotCont.appendChild(row);
   });
 
-  // tick labels
-  const tickRow = document.createElement('div');
-  tickRow.className = 'tick-row';
-  for (let t = 0; t <= TOTAL_TICKS; t += 4) {
-    const tk = document.createElement('span');
-    tk.className = 'tick';
-    tk.style.left = `calc(${pct(t)} - 0px)`;
-    tk.textContent = `t=${t}`;
-    tickRow.appendChild(tk);
+  // Tick labels
+  for (let t = 0; t < TICKS; t++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'tick-lbl';
+    lbl.id = `${prefix}-tlbl-${t}`;
+    lbl.textContent = `t=${t + 1}`;
+    tickCont.appendChild(lbl);
   }
-  container.appendChild(tickRow);
 }
 
-buildPanel('static-lanes', [
-  { label:1, bars:[{req:'A',id:'sb-A'}],   idles:[{id:'si-A',start:4,dur:7}] },
-  { label:2, bars:[{req:'B',id:'sb-B'}],   idles:[{id:'si-B',start:7,dur:4}] },
-  { label:3, bars:[{req:'C',id:'sb-C'}],   idles:[] },
-]);
-// Add next-batch bars for static
-const sLane1Track = document.querySelector('#static-lanes .lane:nth-child(1) .lane-track');
-const sLane2Track = document.querySelector('#static-lanes .lane:nth-child(2) .lane-track');
-const sLane3Track = document.querySelector('#static-lanes .lane:nth-child(3) .lane-track');
-[{track:sLane1Track,req:'D_s',id:'sb-Ds'},{track:sLane2Track,req:'E_s',id:'sb-Es'},{track:sLane3Track,req:'F_s',id:'sb-Fs'}].forEach(({track,req,id}) => {
-  const r = REQUESTS[req];
-  const bar = document.createElement('div');
-  bar.className = 'req-bar'; bar.id = id;
-  bar.style.left = pct(r.start); bar.style.width = w(r.dur);
-  bar.style.background = r.bg; bar.textContent = `Req ${r.label}`;
-  track.appendChild(bar);
-});
+buildPanel('static-slots','static-ticks', STATIC, 'st');
+buildPanel('cont-slots',  'cont-ticks',   CONT,   'cb');
 
-buildPanel('cont-lanes', [
-  { label:1, bars:[{req:'A',id:'cb-A'},{req:'D',id:'cb-D'}], idles:[] },
-  { label:2, bars:[{req:'B',id:'cb-B'},{req:'E',id:'cb-E'}], idles:[] },
-  { label:3, bars:[{req:'C',id:'cb-C'},{req:'F',id:'cb-F'}], idles:[] },
-]);
-
-// ── Show/hide helpers ─────────────────────────────────────────────────────
-function show(...ids) { ids.forEach(id => { const el=document.getElementById(id); if(el) el.classList.add('show'); }); }
-function hide(...ids) { ids.forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('show'); }); }
-
-function setUtilBadge(staticPct, contPct) {
-  const s = document.getElementById('static-util-badge');
-  const c = document.getElementById('cont-util-badge');
-  if (staticPct !== null) { s.textContent = `GPU utilization ≈ ${staticPct}%`; s.style.color = staticPct < 70 ? '#c62828' : '#555'; }
-  if (contPct !== null)   { c.textContent = `GPU utilization ≈ ${contPct}%`;   c.style.color = contPct > 85 ? '#2e7d32' : '#555'; }
+// ── Helpers ────────────────────────────────────────────────────────────────
+function cellEl(prefix, si, ti) {
+  return document.getElementById(`${prefix}-c${si}-t${ti}`);
 }
 
+// Show one column (tick ti) in a panel
+function revealCol(prefix, ti, instant=false) {
+  for (let si = 0; si < 3; si++) {
+    const c = cellEl(prefix, si, ti);
+    if (!c || c.classList.contains('empty')) continue;
+    if (instant) { c.style.opacity = '1'; c.style.transform = 'scale(1)'; }
+    else c.classList.add('show');
+  }
+  // Highlight tick label
+  const tlbl = document.getElementById(`${prefix}-tlbl-${ti}`);
+  if (tlbl) tlbl.classList.add('active');
+  // Move cursor
+  moveCursor(prefix, ti, instant);
+}
+
+function moveCursor(prefix, ti, instant=false) {
+  for (let si = 0; si < 3; si++) {
+    const grid = document.getElementById(`${prefix}-grid-${si}`);
+    const cursor = document.getElementById(`${prefix}-cursor-${si}`);
+    if (!grid || !cursor) continue;
+    // Position cursor to the right of column ti
+    // Each column = 1fr. We use the cell element's position.
+    const cell = cellEl(prefix, si, ti);
+    if (!cell) continue;
+    const gridRect  = grid.getBoundingClientRect();
+    const cellRect  = cell.getBoundingClientRect();
+    const rightPx   = cellRect.right - gridRect.left;
+    cursor.style.left = (rightPx + 1) + 'px';
+    if (!cursor.classList.contains('show')) cursor.classList.add('show');
+  }
+}
+
+function hideAllCursors() {
+  document.querySelectorAll('.cursor-col').forEach(c => c.classList.remove('show'));
+}
+
+// ── Reset / instant ────────────────────────────────────────────────────────
 function resetAll() {
-  ['sb-A','sb-B','sb-C','sb-Ds','sb-Es','sb-Fs','si-A','si-B',
-   'cb-A','cb-B','cb-C','cb-D','cb-E','cb-F'].forEach(id => hide(id));
-  document.getElementById('static-util-badge').textContent = '';
-  document.getElementById('cont-util-badge').textContent = '';
+  for (const prefix of ['st','cb']) {
+    for (let si = 0; si < 3; si++) {
+      for (let ti = 0; ti < TICKS; ti++) {
+        const c = cellEl(prefix, si, ti);
+        if (!c) continue;
+        c.classList.remove('show');
+        c.style.opacity = '';
+        c.style.transform = '';
+      }
+    }
+    for (let ti = 0; ti < TICKS; ti++) {
+      const tlbl = document.getElementById(`${prefix}-tlbl-${ti}`);
+      if (tlbl) tlbl.classList.remove('active');
+    }
+  }
+  hideAllCursors();
+  document.getElementById('static-util').classList.remove('show');
+  document.getElementById('cont-util').classList.remove('show');
+  document.getElementById('summary-box').classList.remove('show');
 }
 
 function applyInstant(n) {
-  // Step 1: initial batch starts (A,B,C in both)
-  if (n >= 1) show('sb-A','sb-B','sb-C','cb-A','cb-B','cb-C');
-  // Step 2: t=4, A done. Static: idle on slot 1. Continuous: D starts.
-  if (n >= 2) { show('si-A','cb-D'); }
-  // Step 3: t=7, B done. Static: idle on slot 2. Continuous: E starts.
-  if (n >= 3) { show('si-B','cb-E'); }
-  // Step 4: t=11, C done. Static: next batch starts. Continuous: F starts.
-  if (n >= 4) { show('sb-Ds','sb-Es','sb-Fs','cb-F'); }
-  // Step 5: util comparison
-  if (n >= 5) setUtilBadge(63, 92);
+  // n = step index (0=intro, 1-13=ticks, 14=summary)
+  const ticks = Math.min(n, TICKS);
+  for (let ti = 0; ti < ticks; ti++) {
+    revealCol('st', ti, true);
+    revealCol('cb', ti, true);
+  }
+  if (ticks > 0) {
+    // Re-highlight only current tick label
+    for (let ti = 0; ti < TICKS; ti++) {
+      const a = ti === ticks - 1;
+      document.getElementById(`st-tlbl-${ti}`)?.classList.toggle('active', a);
+      document.getElementById(`cb-tlbl-${ti}`)?.classList.toggle('active', a);
+    }
+    setTimeout(() => moveCursor('st', ticks-1, true), 30);
+    setTimeout(() => moveCursor('cb', ticks-1, true), 30);
+  }
+  if (n >= 14) {
+    document.getElementById('static-util').textContent = 'GPU util ≈ 79%';
+    document.getElementById('static-util').classList.add('show');
+    document.getElementById('cont-util').textContent = 'GPU util ≈ 85% · Done 2 iters early';
+    document.getElementById('cont-util').classList.add('show');
+    document.getElementById('summary-box').classList.add('show');
+  }
 }
 
-// ── Steps ─────────────────────────────────────────────────────────────────
-const STEPS = [
-  {
-    desc: 'Static batching (top): the GPU processes a fixed set of requests; the next batch only starts after ALL current requests finish. Continuous batching (bottom): as soon as any request completes, a waiting request immediately takes its slot.',
-    async run() {}
-  },
-  {
-    desc: 'At t=0, the same three requests arrive: A (4 steps), B (7 steps), C (11 steps). Both approaches start identically — the difference only shows up as requests complete.',
-    async run() {
-      show('sb-A','sb-B','sb-C'); await sleep(100);
-      show('cb-A','cb-B','cb-C');
-    }
-  },
-  {
-    desc: 'At t=4, Request A finishes. Static batching: Slot 1 goes idle and waits — B and C are still running, so no new request can start. Continuous batching: Request D immediately fills Slot 1. No GPU idle time.',
-    async run() { show('si-A'); await sleep(80); show('cb-D'); }
-  },
-  {
-    desc: 'At t=7, Request B finishes. Static: Slot 2 goes idle (only C is left, holding up everything). Continuous: Request E immediately fills Slot 2.',
-    async run() { show('si-B'); await sleep(80); show('cb-E'); }
-  },
-  {
-    desc: 'At t=11, Request C finishes. Static: the whole batch is finally done — 7 steps of partial GPU waste before D/E/F can start. Continuous: Request F slots in immediately. D and E have already been running since t=4 and t=7.',
-    async run() { show('sb-Ds','sb-Es','sb-Fs'); await sleep(80); show('cb-F'); }
-  },
-  {
-    desc: 'Static: slots were idle from t=4 to t=11 (slots 1 and 2). 7+4 = 11 slot-steps wasted out of 33 total → ~67% utilization. Continuous: no idle time at all → ~92% utilization. Same 6 requests, same GPU — just smarter scheduling.',
-    async run() { setUtilBadge(63, 92); }
-  },
-  {
-    desc: 'Key insight: static batching treats a "batch" as the atomic unit; continuous batching treats each decode ITERATION as the atomic unit — after every step, the scheduler can swap in waiting requests. vLLM implements this as iteration-level scheduling.',
-    async run() {}
-  },
+// ── Step descriptions ──────────────────────────────────────────────────────
+const TICK_DESCS = [
+  // idx 0 = intro (no tick)
+  'Three requests are queued: A (3 tokens), B (5 tokens), C (8 tokens). Three more wait: D (4), E (5), F (3). The key difference: static batching treats the whole batch as the atomic unit; continuous batching treats each decode iteration as the atomic unit.',
+  // t=1 (idx 1)
+  't=1 · Iteration 1: A, B, and C each produce one token in both panels. The batch looks identical so far.',
+  // t=2
+  't=2 · Iteration 2: second token from each request.',
+  // t=3
+  't=3 · Iteration 3: third and final token for Request A — A is about to complete.',
+  // t=4 — A done
+  't=4 · Request A completes ✓ (3/3 tokens).\n  Static: Slot 1 goes idle. B and C are still running so the scheduler cannot start the next batch — it must wait.\n  Continuous: Request D immediately fills Slot 1. Zero idle time.',
+  // t=5
+  't=5 · Static: Slot 1 still idle. Continuous: D, B, C all producing tokens.',
+  // t=6 — B done
+  't=6 · Request B completes ✓ (5/5 tokens).\n  Static: Slot 2 also goes idle. Now 2 of 3 slots are wasted, only C is running.\n  Continuous: Request E immediately fills Slot 2. Still at full capacity.',
+  // t=7
+  't=7 · Static: only C running — 2 slots wasted every iteration. Continuous: C, D, E all producing tokens.',
+  // t=8
+  't=8 · Static: last token for C. Continuous: C\'s last token — also D and E still running.',
+  // t=9 — C done
+  't=9 · Request C completes ✓ (8/8 tokens).\n  Static: entire batch done — after 5 idle slot-steps on Slot 1 and 3 on Slot 2, D/E/F can finally start.\n  Continuous: Request F immediately fills Slot 3. D has been running since t=4, E since t=6.',
+  // t=10
+  't=10 · Continuous: D finishes (started t=4, 4 tokens). Static: D, E, F just started their 2nd token.',
+  // t=11 — F done in continuous
+  't=11 · Continuous: F completes ✓ (3/3 tokens). All 6 requests done! Static: D, E, F mid-way through their run.',
+  // t=12
+  't=12 · Continuous is fully done — all slots finish at t=11. Static: D completes ✓, E still has 1 token left.',
+  // t=13 — static done
+  't=13 · Static: E completes ✓ — all 6 requests done. Continuous finished the same 6 requests at t=11, two full iterations earlier.',
+  // summary
+  't=13 · Final comparison: both approaches processed the same 6 requests on the same GPU. Continuous batching finished 2 iterations sooner and kept all 3 slots busy whenever requests were available. With longer prompts and larger queues the gap widens significantly.',
 ];
+
+// ── Steps ──────────────────────────────────────────────────────────────────
+// Step 0 = intro, steps 1-13 = one iteration each, step 14 = summary
+const STEPS = TICK_DESCS.map((desc, i) => ({
+  desc,
+  async run() {
+    if (i === 0) return; // intro, no tick to reveal
+    const ti = i - 1;   // 0-indexed tick
+    if (i <= TICKS) {
+      // Remove previous active label
+      if (ti > 0) {
+        document.getElementById(`st-tlbl-${ti-1}`)?.classList.remove('active');
+        document.getElementById(`cb-tlbl-${ti-1}`)?.classList.remove('active');
+      }
+      // Stagger the two panels slightly for visual effect
+      revealCol('st', ti);
+      await sleep(80);
+      revealCol('cb', ti);
+      await sleep(200);
+    } else {
+      // Summary step
+      document.getElementById('static-util').textContent = 'GPU util ≈ 79%';
+      document.getElementById('static-util').classList.add('show');
+      document.getElementById('cont-util').textContent = 'GPU util ≈ 85% · Done 2 iters early';
+      document.getElementById('cont-util').classList.add('show');
+      await sleep(200);
+      document.getElementById('summary-box').classList.add('show');
+    }
+  }
+}));
 
 // ── Navigation ────────────────────────────────────────────────────────────
 let cur = 0, busy = false, playActive = false;
@@ -361,10 +475,7 @@ async function goTo(n) {
   if (busy || n < 0 || n >= STEPS.length) return;
   busy = true; setUI(false);
   if (n <= cur) { resetAll(); applyInstant(n); }
-  else {
-    if (n - cur > 1) { resetAll(); applyInstant(n - 1); }
-    await STEPS[n].run();
-  }
+  else { if (n - cur > 1) { resetAll(); applyInstant(n - 1); } await STEPS[n].run(); }
   cur = n; busy = false; updateUI();
 }
 
@@ -374,7 +485,13 @@ async function playAll() {
   document.getElementById('btn-play').textContent = '■ Stop';
   document.getElementById('btn-play').style.background = '#e53935';
   document.getElementById('btn-play').onclick = stopPlay;
-  while (cur < STEPS.length - 1 && playActive) { await goTo(cur + 1); await sleep(900); }
+  while (cur < STEPS.length - 1 && playActive) {
+    await goTo(cur + 1);
+    // shorter pause for middle iterations, longer on key events
+    const t = cur; // cur was just updated
+    const keyEvents = new Set([4,6,9,11,13,14]);
+    await sleep(keyEvents.has(t) ? 1100 : 500);
+  }
   endPlay();
 }
 function stopPlay() { playActive = false; endPlay(); }
@@ -384,19 +501,23 @@ function endPlay() {
   btn.textContent = '▶ Play All'; btn.style.background = '#43a047'; btn.onclick = playAll;
   updateUI();
 }
-function setUI(en) { ['btn-prev','btn-next','btn-play'].forEach(id => document.getElementById(id).disabled = !en); }
+function setUI(en) {
+  ['btn-prev','btn-next','btn-play','btn-reset'].forEach(id =>
+    document.getElementById(id).disabled = !en);
+}
 function updateUI() {
   document.getElementById('step-pill').textContent = `Step ${cur+1} / ${STEPS.length}`;
-  document.getElementById('desc-box').textContent = STEPS[cur].desc;
+  document.getElementById('desc-box').textContent  = STEPS[cur].desc;
   document.getElementById('btn-prev').disabled = cur === 0;
   document.getElementById('btn-next').disabled = cur === STEPS.length - 1;
   document.getElementById('btn-play').disabled = cur === STEPS.length - 1;
+  document.getElementById('btn-reset').disabled = false;
   document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i === cur));
 }
 
 STEPS.forEach((_,i) => {
   const d = document.createElement('div');
-  d.className = 'dot' + (i===0?' active':'');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
   d.addEventListener('click', () => { stopPlay(); goTo(i); });
   document.getElementById('dots').appendChild(d);
 });
