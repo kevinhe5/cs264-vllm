@@ -687,7 +687,7 @@ function applyInstant(n) {
 }
 
 // ── Weight overlay helpers ────────────────────────────────────────────────
-const WD = 5;  // symbolic "d" dimension for overlay grids
+const WD = D;  // overlay uses same column count as main matrices
 
 function woCell(cls) {
   const c = document.createElement('div');
@@ -737,12 +737,12 @@ function buildWeightOverlay(mode) {
     header.textContent = 'Prefill: projecting token embeddings through learned weight matrices';
     footnote.textContent = 'K and V are computed once per token and stored — the KV cache. Q is not stored because it\'s only needed at the moment of computation.';
     const defs = [
-      { lbl:'Q', lblColor:'#0f766e', wName:'W<sub>Q</sub>', wNote:'query: "what am I looking for?"',
-        resultClass:'wc-q', resultName:'Q', badge:null },
-      { lbl:'K', lblColor:'#b45309', wName:'W<sub>K</sub>', wNote:'key: "what do I contain?"',
-        resultClass:'wc-k', resultName:'K', badge:'→ stored in KV cache' },
-      { lbl:'V', lblColor:'#7c3aed', wName:'W<sub>V</sub>', wNote:'value: "what info do I carry?"',
-        resultClass:'wc-v', resultName:'V', badge:'→ stored in KV cache' },
+      { lbl:'E', lblColor:'#64748b', wName:'W<sub>Q</sub>', wNote:'query: "what am I looking for?"',
+        resultName:'Q', badge:null },
+      { lbl:'E', lblColor:'#64748b', wName:'W<sub>K</sub>', wNote:'key: "what do I contain?"',
+        resultName:'K', badge:'→ stored in KV cache' },
+      { lbl:'E', lblColor:'#64748b', wName:'W<sub>V</sub>', wNote:'value: "what info do I carry?"',
+        resultName:'V', badge:'→ stored in KV cache' },
     ];
     defs.forEach(d => {
       const row = document.createElement('div');
@@ -753,8 +753,8 @@ function buildWeightOverlay(mode) {
       const eGrid = woGrid(T, WD, (r) => `wc-tok${r}`);
       // W: WD × WD, weight color
       const wGrid = woGrid(WD, WD, () => 'wc-w');
-      // Result: T × WD
-      const rGrid = woGrid(T, WD, () => d.resultClass);
+      // Result: T × WD, per-row token colors
+      const rGrid = woGrid(T, WD, (r) => `wc-tok${r}`);
       row.appendChild(lbl);
       row.appendChild(woBlock('E &nbsp;(t × d)', eGrid));
       row.appendChild(woOp('×'));
@@ -774,12 +774,12 @@ function buildWeightOverlay(mode) {
     header.textContent = 'Decode: projecting new token T5 through the same weight matrices';
     footnote.textContent = 'q_t is used immediately for attention. k_T5 and v_T5 are appended to the KV cache so future tokens can attend to T5.';
     const defs = [
-      { lbl:'q<sub>t</sub>', lblColor:'#0f766e', wName:'W<sub>Q</sub>',
-        resultClass:'wc-q', resultName:'q<sub>t</sub>', note:'single query vector — used now, discarded after', badge:null },
-      { lbl:'k<sub>T5</sub>', lblColor:'#b45309', wName:'W<sub>K</sub>',
-        resultClass:'wc-k', resultName:'k<sub>T5</sub>', note:'new key vector for T5', badge:'→ appended to K cache' },
-      { lbl:'v<sub>T5</sub>', lblColor:'#7c3aed', wName:'W<sub>V</sub>',
-        resultClass:'wc-v', resultName:'v<sub>T5</sub>', note:'new value vector for T5', badge:'→ appended to V cache' },
+      { lbl:'e<sub>T5</sub>', lblColor:'#f59e0b', wName:'W<sub>Q</sub>',
+        resultName:'q<sub>t</sub>', note:'single query vector — used now, discarded after', badge:null },
+      { lbl:'e<sub>T5</sub>', lblColor:'#f59e0b', wName:'W<sub>K</sub>',
+        resultName:'k<sub>T5</sub>', note:'new key vector for T5', badge:'→ appended to K cache' },
+      { lbl:'e<sub>T5</sub>', lblColor:'#f59e0b', wName:'W<sub>V</sub>',
+        resultName:'v<sub>T5</sub>', note:'new value vector for T5', badge:'→ appended to V cache' },
     ];
     defs.forEach(d => {
       const row = document.createElement('div');
@@ -789,7 +789,7 @@ function buildWeightOverlay(mode) {
       // Single token T5 embedding (1 row, amber)
       const eGrid = woGrid(1, WD, () => 'wc-tok4');
       const wGrid = woGrid(WD, WD, () => 'wc-w');
-      const rGrid = woGrid(1, WD, () => d.resultClass);
+      const rGrid = woGrid(1, WD, () => 'wc-tok4');
       row.appendChild(lbl);
       row.appendChild(woBlock('embed(T5) &nbsp;(1 × d)', eGrid));
       row.appendChild(woOp('×'));
